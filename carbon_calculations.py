@@ -36,7 +36,14 @@ class Carbon_Calculations:
         self._mpg = mpg
 
         
-    def calculate_carbon_emssion(self):
-        print(self.distance.calculate_distance())
-        # pounds_of_carbon = (self.distance / self.mpg) * 19.6
-        # print(f”The CO2 emmissions for this drive was {pounds_of_carbon} lbs.“)
+    def calculate_carbon_emissions_saved(self):
+        pounds_of_carbon_per_person = (self.distance / self.mpg) * 19.6
+        
+        # Emissions if everyone drives individually
+        emissions_everyone_drives_separately = pounds_of_carbon_per_person * self.passengers
+        
+        # Emissions saved by carpooling
+        emissions_saved_by_carpooling = emissions_everyone_drives_separately - pounds_of_carbon_per_person
+        
+        return emissions_saved_by_carpooling
+    

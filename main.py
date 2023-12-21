@@ -1,5 +1,4 @@
-from distance import Distance
-from carbon_calculations import Carbon_Calculations
+from drive import Drive
 
 if __name__ == '__main__':
     '''
@@ -13,7 +12,5 @@ input_passengers = int(input('Enter the number of passengers included in your ca
 input_mpg = float(input('What is your gas mileage? An estimated number is fine >> '))
 
 
-distance = Distance(input_origin, input_name)
-carbon_emission = Carbon_Calculations(distance, input_passengers, input_mpg)
-distance.calculate_distance()
-carbon_emission.calculate_carbon_emssion()
+drive = Drive(input_origin, input_name, input_passengers, input_mpg)
+print(drive.distance)
