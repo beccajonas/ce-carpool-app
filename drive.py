@@ -1,13 +1,12 @@
 from googlemaps import Client
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 api_key = os.getenv('API_KEY')
-gmaps = Client(key=api_key)
 
 class Drive:
-
     ski_resorts = {
         "Beaver Mountain": "40000 East, US-89, Garden City, UT 84028",
         "Cherry Peak": "3200 E 11000 N, Richmond, UT 84333",
@@ -26,6 +25,7 @@ class Drive:
         "Eagle Point": "150 S W Village Cir, Beaver, UT 84713"
     }
 
+
     def __init__(self, start, end, passengers, mpg):
         self.start = start
         self.end = end
@@ -33,8 +33,8 @@ class Drive:
         self.mpg = mpg
 
         self.distance = self.calculate_distance()
-        # self.emissions = self.calculate_emissions()
-        # self.emissions_saved = self.calculate_emissions_saved()
+        self.ride_emissions = self.calculate_ride_emissions()
+        self.emissions_saved = self.calculate_emissions_saved()
 
     @property
     def start(self):
@@ -55,16 +55,29 @@ class Drive:
         if end not in self.ski_resorts:
             raise Exception("That’s not a Utah Ski Resort... Try again")
         self._end = self.ski_resorts[end]
-    
+
     def calculate_distance(self):
-        directions_result = gmaps.directions(self.start, self.end, mode="driving")
-        distance = directions_result[0]['legs'][0]['distance']['text']
-        return distance
-    
-    def calculate_emissions(self):
-        # Implement this method based on your emissions calculation logic
-        pass
+        gmaps = Client(key=api_key)
+
+        try:
+            directions_result = gmaps.directions(self.start, self.end, mode="driving")
+            distance_text = directions_result[0]['legs'][0]['distance']['text']
+
+            # Extract the numeric part from the distance string using regular expressions
+            numeric_distance = float(re.search(r'\d+\.\d+', distance_text).group())
+
+            return numeric_distance
+        except Exception as e:
+            print(f"Error calculating distance: {e}")
+
+    def calculate_ride_emissions(self):
+        ride_emissions = round((self.distance / self.mpg) * 19.6, 1)
+        # 19.6 represents the emissions factor (generalized estimation for average car)
+        return ride_emissions
 
     def calculate_emissions_saved(self):
-        # Implement this method based on your emissions saved calculation logic
-        pass
+        emissions_if_not_carpooling = self.ride_emissions * (self.passengers + 1)
+        # if each person drove alone, they'd use emissions_per person
+        emissions_saved_by_carpooling = emissions_if_not_carpooling - self.passengers 
+        # since they rode together, the emissions they saved is the total - 
+        return emissions_saved_by_carpooling
