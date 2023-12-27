@@ -14,7 +14,7 @@ class Drive:
         "Brighton": "8302 S Brighton Loop Rd, Brighton, UT 84121", 
         "Cherry Peak": "3200 E 11000 N, Richmond, UT 84333", 
         "Deer Valley": "2250 Deer Valley Dr S, Park City, UT 84060", 
-        "Eagle Point": "150 S W Village Cir, Beaver, UT 84713", 
+        "Eagle Point": "150 S W VILLAGE CIR, BEAVER, UT 84713 ", 
         "Nordic Valley": "3567 Nordic Valley Way, Eden, UT 84310", 
         "Park City": "1355 Lowell Ave, Park City, UT 84060",
         "Powder Mountain": "6965 E Powder Mountain Rd, Eden, UT 84310", 
@@ -54,7 +54,7 @@ class Drive:
     @end.setter
     def end(self, end):
         if end not in self.ski_resorts:
-            raise Exception("That’s not a Utah Ski Resort... Try again")
+            raise Exception("Please select a ski resort")
         self._end = self.ski_resorts[end]
     
     @property
@@ -63,9 +63,12 @@ class Drive:
     
     @passengers.setter
     def passengers(self, passengers):
-        if not isinstance(passengers, int):
-            raise Exception("Please enter an integer")
-        self._passengers = passengers
+        try:
+            if isinstance(int(passengers), int) and int(passengers) > 0 and int(passengers) <= 13:
+                self._passengers = int(passengers)
+            else: raise ValueError()
+        except ValueError:
+            raise ValueError("Please enter a valid integer for the number of passengers.")
 
     @property
     def mpg(self):
@@ -73,28 +76,32 @@ class Drive:
 
     @mpg.setter
     def mpg(self, mpg):
-        if not isinstance(mpg, int):
-            raise Exception("Please enter an integer")
-        self._mpg = mpg
+        try:
+            if isinstance(int(mpg), int) and int(mpg) < 70:
+                self._mpg = int(mpg)
+            else: raise ValueError()
+        except ValueError:
+            raise ValueError("Please enter a whole number estimation for mpg")
 
     def calculate_distance(self):
         gmaps = Client(key=api_key)
-
         try:
             directions_result = gmaps.directions(self.start, self.end, mode="driving")
             distance_text = directions_result[0]['legs'][0]['distance']['text']
-
+            print(distance_text)
+            print(type(distance_text))
             # Extract the numeric part from the distance string using regular expressions
-            numeric_distance = float(re.search(r'\d+\.\d+', distance_text).group())
-
+            numeric_distance = float(re.search(r'\d+(\.\d+)?', distance_text).group())
             return numeric_distance
+        
         except Exception as e:
-            print(f"Error calculating distance: {e}")
+            raise ValueError(f"{e}")
 
     def calculate_ride_emissions(self):
         ride_emissions = round((self.distance / self.mpg) * 19.6, 1)
-        # 19.6 represents the emissions factor (generalized estimation for average car)
+        # 19.6 represents the emissions factor (generalized estimation for the average car)
         return ride_emissions
+
 
     def calculate_emissions_saved(self):
         emissions_if_not_carpooling = self.ride_emissions * (self.passengers + 1)
