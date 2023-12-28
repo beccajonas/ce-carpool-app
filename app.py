@@ -34,18 +34,15 @@ class CarpoolingApp:
         self.address_label = customtkinter.CTkLabel(self.input_frame, text="Starting Address")
         self.address_label.pack(pady=8, padx=2)
         self.address_entry = customtkinter.CTkEntry(self.input_frame)
-        self.address_entry.pack()
-        
-        self.resort_label = customtkinter.CTkLabel(self.input_frame, text="Ski Resort")
-        self.resort_label.pack(pady=8, padx=2)
+        self.address_entry.pack(pady=6, padx=2)
 
         self.resort_combobox = customtkinter.CTkComboBox(
             self.input_frame,
-            values=["Select a Resort"] + list(Drive.ski_resorts.keys())
+            values=["Select Resort"] + list(Drive.ski_resorts.keys())
         )
 
-        self.resort_combobox.set("Select a Resort")
-        self.resort_combobox.pack()
+        self.resort_combobox.set("Select Resort")
+        self.resort_combobox.pack(pady=4, padx=2)
 
         self.passengers_label = customtkinter.CTkLabel(self.input_frame, text="Number of Passengers (driver excluded)")
         self.passengers_label.pack(pady=8, padx=2)
@@ -80,19 +77,31 @@ class CarpoolingApp:
             self.calculate_button.destroy()
 
             # Create a new frame for displaying results
-            result_frame = ttk.Frame(self.master)
-            result_frame.pack()
+            image = Image.open("app_background.png") 
+            photo = ImageTk.PhotoImage(image) 
+
+        # Create the custom frame with the image
+            self.display_frame = ttk.Frame(self.master)
+            self.display_frame.pack(expand=True, fill='both')
+
+            # Set the image as the background
+            bg_label = ttk.Label(self.display_frame, image=photo)
+            bg_label.place(relwidth=1, relheight=1) 
+            bg_label.image = photo
+
+            customtkinter.set_appearance_mode("light")
+            customtkinter.set_default_color_theme("theme.json")
 
             result_text = f"Distance driven: {distance} miles, {emissions} lbs. of CO2 emissions"
-            result_label = ttk.Label(result_frame, text=result_text)
+            result_label = customtkinter.CTkLabel(self.display_frame, text=result_text)
             result_label.pack(pady=10)
 
             result_text_1 = f"{snow_machine}"
-            result_label_1 = ttk.Label(result_frame, text=result_text_1)
+            result_label_1 = customtkinter.CTkLabel(self.display_frame, text=result_text_1)
             result_label_1.pack(pady=10)
 
             result_text_2 = f"{beers_brewed}"
-            result_label_2 = ttk.Label(result_frame, text=result_text_2)
+            result_label_2 = customtkinter.CTkLabel(self.display_frame, text=result_text_2)
             result_label_2.pack(pady=10)
 
         except ValueError as ve:
