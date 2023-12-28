@@ -54,7 +54,7 @@ class Drive:
     @end.setter
     def end(self, end):
         if end not in self.ski_resorts:
-            raise Exception("Please select a ski resort")
+            raise Exception("Please select a ski resort.")
         self._end = self.ski_resorts[end]
     
     @property
@@ -81,21 +81,19 @@ class Drive:
                 self._mpg = int(mpg)
             else: raise ValueError()
         except ValueError:
-            raise ValueError("Please enter a whole number estimation for mpg")
+            raise ValueError("Please enter a whole number estimation for MPG.")
 
     def calculate_distance(self):
         gmaps = Client(key=api_key)
         try:
             directions_result = gmaps.directions(self.start, self.end, mode="driving")
             distance_text = directions_result[0]['legs'][0]['distance']['text']
-            print(distance_text)
-            print(type(distance_text))
             # Extract the numeric part from the distance string using regular expressions
             numeric_distance = float(re.search(r'\d+(\.\d+)?', distance_text).group())
             return numeric_distance
         
         except Exception as e:
-            raise ValueError(f"{e}")
+            raise ValueError(f"Error: {e} | Please enter valid address.")
 
     def calculate_ride_emissions(self):
         ride_emissions = round((self.distance / self.mpg) * 19.6, 1)
